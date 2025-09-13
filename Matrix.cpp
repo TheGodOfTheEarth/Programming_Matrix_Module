@@ -1,7 +1,6 @@
 #include "Matrix.h"
 #include <stdexcept>
 
-// Конструктор по умолчанию
 Matrix::Matrix() {
     sTitle = "Матрица";
     nMatrR = 0;
@@ -10,7 +9,6 @@ Matrix::Matrix() {
     matr = nullptr;
 }
 
-// Конструктор с размерами
 Matrix::Matrix(int rows, int cols) {
     sTitle = "Матрица";
     nMatrR = rows;
@@ -20,7 +18,6 @@ Matrix::Matrix(int rows, int cols) {
     Create(rows, cols);
 }
 
-// Конструктор с размерами и заголовком
 Matrix::Matrix(int rows, int cols, const std::string& title) {
     sTitle = title;
     nMatrR = rows;
@@ -30,12 +27,10 @@ Matrix::Matrix(int rows, int cols, const std::string& title) {
     Create(rows, cols);
 }
 
-// Деструктор
 Matrix::~Matrix() {
     Delete();
 }
 
-// Очистка матрицы (заполнение нулями)
 void Matrix::Clear() {
     if (matr == nullptr) return;
     for (int i = 0; i < nMatrR; i++) {
@@ -46,7 +41,6 @@ void Matrix::Clear() {
     bFull = false;
 }
 
-// Создание матрицы с текущими размерами
 int Matrix::Create() {
     if (nMatrR == 0 || nMatrC == 0) {
         return -101;
@@ -54,7 +48,6 @@ int Matrix::Create() {
     return Create(nMatrR, nMatrC);
 }
 
-// Создание матрицы с указанными размерами
 int Matrix::Create(int rows, int cols) {
     if (rows <= 0 || cols <= 0) {
         return -101;
@@ -80,7 +73,6 @@ int Matrix::Create(int rows, int cols) {
     }
 }
 
-// Удаление матрицы и освобождение памяти
 void Matrix::Delete() {
     if (matr != nullptr) {
         for (int i = 0; i < nMatrR; i++) {
@@ -97,7 +89,6 @@ void Matrix::Delete() {
     bFull = false;
 }
 
-// Добавление измерений
 int Matrix::AddDim(TypeSide side, int rowCount, int colCount) {
     if (rowCount == 0 && colCount == 0) return -201;
     
@@ -135,14 +126,12 @@ int Matrix::AddDim(TypeSide side, int rowCount, int colCount) {
             return -200;
     }
     
-    // Замена текущей матрицы на новую
     Delete();
     matr = newMatrix.matr;
     nMatrR = newMatrix.nMatrR;
     nMatrC = newMatrix.nMatrC;
     bFull = newMatrix.bFull;
     
-    // Предотвращаем двойное удаление
     newMatrix.matr = nullptr;
     newMatrix.nMatrR = 0;
     newMatrix.nMatrC = 0;
@@ -150,7 +139,6 @@ int Matrix::AddDim(TypeSide side, int rowCount, int colCount) {
     return 0;
 }
 
-// Транспонирование матрицы
 int Matrix::Transpose() {
     if (matr == nullptr || nMatrR <= 0 || nMatrC <= 0) {
         return -1;
@@ -164,19 +152,16 @@ int Matrix::Transpose() {
         }
     }
     
-    // Замена текущей матрицы на транспонированную
     Delete();
     matr = tempMatrix.matr;
     nMatrR = tempMatrix.nMatrR;
     nMatrC = tempMatrix.nMatrC;
     
-    // Предотвращаем двойное удаление
     tempMatrix.matr = nullptr;
     
     return 0;
 }
 
-// Копирование матрицы
 int Matrix::Copy(const Matrix* source, Matrix* destination) const {
     if (source == nullptr || destination == nullptr) {
         return -1;
@@ -198,7 +183,6 @@ int Matrix::Copy(const Matrix* source, Matrix* destination) const {
     return 0;
 }
 
-// Вставка строк/столбцов
 int Matrix::Insert(TypeSide side, int index, int count) {
     if (count <= 0) return -204;
     if (index < 0) index = 0;
@@ -265,7 +249,6 @@ Matrix Matrix::Double() const {
     return result;
 }
 
-// Удаление измерения
 int Matrix::DeleteDim(TypeSide side, int index) {
     if (index < 0) return -1;
     
@@ -325,7 +308,6 @@ int Matrix::Assign(const Matrix* source) {
     return 0;
 }
 
-// Изменение размера матрицы
 int Matrix::NewSize(int newRows, int newCols) {
     Matrix tempMatrix;
     if (Copy(this, &tempMatrix) != 0) {
@@ -336,7 +318,6 @@ int Matrix::NewSize(int newRows, int newCols) {
         return -2;
     }
     
-    // Копируем данные из временной матрицы
     int copyRows = (newRows < tempMatrix.nMatrR) ? newRows : tempMatrix.nMatrR;
     int copyCols = (newCols < tempMatrix.nMatrC) ? newCols : tempMatrix.nMatrC;
     
@@ -348,18 +329,6 @@ int Matrix::NewSize(int newRows, int newCols) {
     
     return 0;
 }
-
-// Вывод матрицы в консоль
-// void Matrix::Print() const {
-//     std::cout << sTitle << " (" << nMatrR << "x" << nMatrC << "):" << std::endl;
-//     for (int r = 0; r < nMatrR; r++) {
-//         for (int c = 0; c < nMatrC; c++) {
-//             std::cout << matr[r][c] << "\t";
-//         }
-//         std::cout << std::endl;
-//     }
-//     std::cout << std::endl;
-// }
 
 std::string Matrix::FormatMatrixToString() const {
     std::stringstream ss;
@@ -376,7 +345,6 @@ std::string Matrix::FormatMatrixToString() const {
     return ss.str();
 }
 
-// Вывод матрицы в стандартный поток (консоль)
 void Matrix::Print() const {
     if (Empty()) {
         std::cout << "Матрица пуста\n";
@@ -385,7 +353,6 @@ void Matrix::Print() const {
     std::cout << FormatMatrixToString() << std::endl;
 }
 
-// Возврат матрицы в виде строки
 std::string Matrix::ToString() const {
     if (Empty()) {
         return "Матрица пуста";
@@ -393,7 +360,6 @@ std::string Matrix::ToString() const {
     return FormatMatrixToString();
 }
 
-// Запись матрицы в файл
 bool Matrix::PrintToFile(const std::string& filename) const {
     if (Empty()) {
         return false;

@@ -8,20 +8,19 @@
 class Matrix {
 private:
     std::string sTitle;
-    int nMatrR;     // Количество строк
-    int nMatrC;     // Количество столбцов
-    bool bFull;     // Флаг заполненности матрицы
-    double** matr;  // Данные матрицы
+    int nMatrR;
+    int nMatrC;
+    bool bFull;
+    double** matr;
 
-    // Вспомогательный метод для форматирования матрицы в строку
     std::string FormatMatrixToString() const;
 
 public:
     enum class TypeSide {
         NONE,
-        Row,    // Строка
-        Col,    // Столбец
-        Both    // Оба измерения
+        Row,
+        Col,
+        Both
     };
 
     // Конструкторы и деструктор
