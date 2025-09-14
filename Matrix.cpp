@@ -337,7 +337,7 @@ std::string Matrix::FormatMatrixToString() const {
     
     for (int r = 0; r < nMatrR; r++) {
         for (int c = 0; c < nMatrC; c++) {
-            ss << std::setw(10) << std::setprecision(4) << std::fixed << matr[r][c];
+            ss << std::setw(10) << std::setprecision(0) << std::fixed << matr[r][c]; ////////////////////
         }
         ss << "\n";
     }
@@ -347,7 +347,7 @@ std::string Matrix::FormatMatrixToString() const {
 
 void Matrix::Print() const {
     if (Empty()) {
-        std::cout << "Матрица пуста\n";
+        std::cout << "Matr is empty/ Матрица пуста\n";
         return;
     }
     std::cout << FormatMatrixToString() << std::endl;
@@ -355,7 +355,7 @@ void Matrix::Print() const {
 
 std::string Matrix::ToString() const {
     if (Empty()) {
-        return "Матрица пуста";
+        return "Matr is empty/ Матрица пуста";
     }
     return FormatMatrixToString();
 }
