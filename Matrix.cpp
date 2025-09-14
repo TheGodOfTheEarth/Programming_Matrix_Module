@@ -242,13 +242,14 @@ int Matrix::Insert(TypeSide side, int index, int count) {
     return 0;
 }
 
-// Создание копии матрицы
-Matrix Matrix::Double() const {
-    Matrix result(nMatrR, nMatrC);
-    Copy(this, &result);
-    return result;
-}
+// Создание копии матрицы !!! не работает !!!
+// Matrix Matrix::Double() const {
+//     Matrix result(nMatrR, nMatrC);
+//     Copy(this, &result);
+//     return result;
+// }
 
+// удаление пространства !!! не работает !!!
 int Matrix::DeleteDim(TypeSide side, int index) {
     if (index < 0) return -1;
     
