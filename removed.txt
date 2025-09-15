@@ -1,0 +1,47 @@
+main.cpp: {
+
+	 // Double
+	 test = mat.Double();
+	 cout << "\n\n" << "=== Doubled Matrix ===" << endl;
+    test.Print();
+}
+
+
+Matrix.cpp: {
+
+	// Создание копии матрицы
+	Matrix Matrix::Double() const {
+		Matrix result(nMatrR, nMatrC);
+		Copy(this, &result);
+		return result;
+	}
+
+
+	Matrix Matrix::Double() const {
+		// Создаем матрицу без использования конструктора с параметрами
+		Matrix result;
+		
+		// Создаем память вручную
+		if (result.Create(nMatrR, nMatrC) != 0) {
+			// Возвращаем пустую матрицу в случае ошибки
+			return Matrix(); 
+		}
+		
+		// Копируем данные вручную (без использования Copy())
+		for (int r = 0; r < nMatrR; r++) {
+			for (int c = 0; c < nMatrC; c++) {
+					result.matr[r][c] = matr[r][c];
+			}
+		}
+		
+		result.sTitle = sTitle + " (копия)";
+		result.bFull = bFull;
+		
+		return result;
+	}
+}
+
+
+Matrix.h: {
+	    Matrix Double() const;
+}

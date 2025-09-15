@@ -162,13 +162,40 @@ int Matrix::Transpose() {
     return 0;
 }
 
+// int Matrix::Copy(const Matrix* source, Matrix* destination) const {
+//     if (source == nullptr || destination == nullptr) {
+//         return -1;
+//     }
+    
+//     if (destination->Create(source->nMatrR, source->nMatrC) != 0) {
+//         return -2;
+//     }
+    
+//     for (int r = 0; r < source->nMatrR; r++) {
+//         for (int c = 0; c < source->nMatrC; c++) {
+//             destination->matr[r][c] = source->matr[r][c];
+//         }
+//     }
+    
+//     destination->bFull = source->bFull;
+//     destination->sTitle = source->sTitle;
+    
+//     return 0;
+// }
+
 int Matrix::Copy(const Matrix* source, Matrix* destination) const {
     if (source == nullptr || destination == nullptr) {
         return -1;
     }
     
-    if (destination->Create(source->nMatrR, source->nMatrC) != 0) {
-        return -2;
+    if (destination->nMatrR != source->nMatrR || 
+        destination->nMatrC != source->nMatrC) {
+        if (destination->Create(source->nMatrR, source->nMatrC) != 0) {
+            return -2;
+        }
+    }
+    else {
+        destination->Clear();
     }
     
     for (int r = 0; r < source->nMatrR; r++) {
@@ -242,42 +269,102 @@ int Matrix::Insert(TypeSide side, int index, int count) {
     return 0;
 }
 
-// Создание копии матрицы !!! не работает !!!
-// Matrix Matrix::Double() const {
-//     Matrix result(nMatrR, nMatrC);
-//     Copy(this, &result);
-//     return result;
-// }
 
 // удаление пространства !!! не работает !!!
+// int Matrix::DeleteDim(TypeSide side, int index) {
+//     if (index < 0) return -1;
+    
+//     switch (side) {
+//         case TypeSide::Row:
+//             if (index >= nMatrR) return -2;
+            
+//             for (int r = index; r < nMatrR - 1; r++) {
+//                 for (int c = 0; c < nMatrC; c++) {
+//                     matr[r][c] = matr[r + 1][c];
+//                 }
+//             }
+            
+//             if (Create(nMatrR - 1, nMatrC) != 0) return -3;
+//             break;
+            
+//         case TypeSide::Col:
+//             if (index >= nMatrC) return -2;
+            
+//             for (int r = 0; r < nMatrR; r++) {
+//                 for (int c = index; c < nMatrC - 1; c++) {
+//                     matr[r][c] = matr[r][c + 1];
+//                 }
+//             }
+            
+//             if (Create(nMatrR, nMatrC - 1) != 0) return -3;
+//             break;
+            
+//         default:
+//             return -200;
+//     }
+    
+//     return 0;
+// }
+
 int Matrix::DeleteDim(TypeSide side, int index) {
     if (index < 0) return -1;
     
     switch (side) {
-        case TypeSide::Row:
+        case TypeSide::Row: {
             if (index >= nMatrR) return -2;
             
+            // Сдвигаем строки
             for (int r = index; r < nMatrR - 1; r++) {
                 for (int c = 0; c < nMatrC; c++) {
                     matr[r][c] = matr[r + 1][c];
                 }
             }
             
-            if (Create(nMatrR - 1, nMatrC) != 0) return -3;
-            break;
+            // Удаляем последнюю строку
+            delete[] matr[nMatrR - 1];
             
-        case TypeSide::Col:
+            // Создаем новый массив указателей
+            double** newRowPtrs = new double*[nMatrR - 1];
+            for (int r = 0; r < nMatrR - 1; r++) {
+                newRowPtrs[r] = matr[r];
+            }
+            
+            delete[] matr;
+            matr = newRowPtrs;
+            nMatrR--;
+            break;
+        }
+            
+        case TypeSide::Col: {
             if (index >= nMatrC) return -2;
             
             for (int r = 0; r < nMatrR; r++) {
+                // Сдвигаем элементы
                 for (int c = index; c < nMatrC - 1; c++) {
                     matr[r][c] = matr[r][c + 1];
                 }
+                
+                // Создаем новую строку
+                double* newRow = new double[nMatrC - 1];
+                for (int c = 0; c < nMatrC - 1; c++) {
+                    newRow[c] = matr[r][c];
+                }
+                
+                delete[] matr[r];
+                matr[r] = newRow;
             }
-            
-            if (Create(nMatrR, nMatrC - 1) != 0) return -3;
+            nMatrC--;
             break;
+        }
             
+        case TypeSide::Both: {
+            // Удаление и строки и столбца - сложная операция
+            // Можно реализовать как последовательность двух удалений
+            // или отдельной логикой
+            return -201; // Not implemented
+        }
+            
+        case TypeSide::NONE:
         default:
             return -200;
     }

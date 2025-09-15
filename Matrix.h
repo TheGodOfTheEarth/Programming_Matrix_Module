@@ -38,7 +38,6 @@ public:
     int Assign(const Matrix* source);
     int Copy(const Matrix* source, Matrix* destination) const;
     int DeleteDim(TypeSide side, int index = -1);
-    Matrix Double() const;
     int Insert(TypeSide side, int index = 0, int count = 1);
     bool IsFull() const { return bFull; }
     int NewSize(int newRows, int newCols);

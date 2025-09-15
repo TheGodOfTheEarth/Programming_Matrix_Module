@@ -26,6 +26,13 @@ int main() {
     test.Print();
 
 
+	 // SetTitle
+	 mat.Copy(&mat, &test);
+	 test.SetTitle("New title");
+	 cout << "\n\n" << "=== Retitled Matrix ===" << endl;
+    test.Print();
+
+
 	 // Clear
 	 mat.Copy(&mat, &test);
 	 test.Clear();
@@ -54,22 +61,16 @@ int main() {
     test.Print();
 
 
-	 // Double
-	//  test = mat.Double();
-	//  cout << "\n\n" << "=== Doubled Matrix ===" << endl;
-   //  test.Print();
-
-
 	 // DeleteDim
-	//  mat.Copy(&mat, &test);
-	//  test.DeleteDim(Matrix::TypeSide::Col, 2);
-	//  cout << "\n\n" << "=== Matrix with Deleted Dim(s) ===" << endl;
-   //  test.Print();
+	 mat.Copy(&mat, &test);
+	 test.DeleteDim(Matrix::TypeSide::Col, 2);
+	 cout << "\n\n" << "=== Matrix with Deleted Dim(s) ===" << endl;
+    test.Print();
 
 
 	 // NewSize
 	 mat.Copy(&mat, &test);
-	 test.NewSize(3, 2);
+	 test.NewSize(4, 2);
 	 cout << "\n\n" << "=== NewSized Matrix ===" << endl;
     test.Print();
 
