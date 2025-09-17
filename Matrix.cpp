@@ -1,16 +1,20 @@
 #include "Matrix.h"
-#include <stdexcept>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+// #include <stdexcept>
+
 
 Matrix::Matrix() {
-    sTitle = "Матрица";
     nMatrR = 0;
     nMatrC = 0;
     bFull = false;
     matr = nullptr;
 }
 
+
 Matrix::Matrix(int rows, int cols) {
-    sTitle = "Матрица";
     nMatrR = rows;
     nMatrC = cols;
     bFull = false;
@@ -18,18 +22,11 @@ Matrix::Matrix(int rows, int cols) {
     Create(rows, cols);
 }
 
-Matrix::Matrix(int rows, int cols, const std::string& title) {
-    sTitle = title;
-    nMatrR = rows;
-    nMatrC = cols;
-    bFull = false;
-    matr = nullptr;
-    Create(rows, cols);
-}
 
 Matrix::~Matrix() {
     Delete();
 }
+
 
 void Matrix::Clear() {
     if (matr == nullptr) return;
@@ -41,12 +38,6 @@ void Matrix::Clear() {
     bFull = false;
 }
 
-int Matrix::Create() {
-    if (nMatrR == 0 || nMatrC == 0) {
-        return -101;
-    }
-    return Create(nMatrR, nMatrC);
-}
 
 int Matrix::Create(int rows, int cols) {
     if (rows <= 0 || cols <= 0) {
@@ -162,26 +153,6 @@ int Matrix::Transpose() {
     return 0;
 }
 
-// int Matrix::Copy(const Matrix* source, Matrix* destination) const {
-//     if (source == nullptr || destination == nullptr) {
-//         return -1;
-//     }
-    
-//     if (destination->Create(source->nMatrR, source->nMatrC) != 0) {
-//         return -2;
-//     }
-    
-//     for (int r = 0; r < source->nMatrR; r++) {
-//         for (int c = 0; c < source->nMatrC; c++) {
-//             destination->matr[r][c] = source->matr[r][c];
-//         }
-//     }
-    
-//     destination->bFull = source->bFull;
-//     destination->sTitle = source->sTitle;
-    
-//     return 0;
-// }
 
 int Matrix::Copy(const Matrix* source, Matrix* destination) const {
     if (source == nullptr || destination == nullptr) {
@@ -205,7 +176,6 @@ int Matrix::Copy(const Matrix* source, Matrix* destination) const {
     }
     
     destination->bFull = source->bFull;
-    destination->sTitle = source->sTitle;
     
     return 0;
 }
@@ -372,7 +342,7 @@ int Matrix::DeleteDim(TypeSide side, int index) {
     return 0;
 }
 
-// Присвоение матрицы
+
 int Matrix::Assign(const Matrix* source) {
     if (source == nullptr) return -202;
     
@@ -391,7 +361,6 @@ int Matrix::Assign(const Matrix* source) {
     }
     
     bFull = source->bFull;
-    sTitle = source->sTitle;
     
     return 0;
 }
@@ -418,35 +387,31 @@ int Matrix::NewSize(int newRows, int newCols) {
     return 0;
 }
 
-std::string Matrix::FormatMatrixToString() const {
+std::string Matrix::FormatMatrixToString(int nSetW = 10, int nSetPrecision = 0, std::string sDivider = "\n", TypeOutput type = TypeOutput::fixed) const {
     std::stringstream ss;
-    
-    ss << sTitle << " (" << nMatrR << "x" << nMatrC << "):\n";
+
+	 switch (type) {
+        case TypeOutput::fixed:
+            ss << std::fixed;
+            break;
+        case TypeOutput::scientific:
+            ss << std::scientific;
+            break;
+        case TypeOutput::defaultfloat:
+            ss << std::defaultfloat;
+            break;
+    }
     
     for (int r = 0; r < nMatrR; r++) {
         for (int c = 0; c < nMatrC; c++) {
-            ss << std::setw(10) << std::setprecision(0) << std::fixed << matr[r][c]; ////////////////////
+            ss << std::setw(nSetW) << std::setprecision(nSetPrecision) << matr[r][c];
         }
-        ss << "\n";
+        ss << sDivider;
     }
     
     return ss.str();
 }
 
-void Matrix::Print() const {
-    if (Empty()) {
-        std::cout << "Matr is empty/ Матрица пуста\n";
-        return;
-    }
-    std::cout << FormatMatrixToString() << std::endl;
-}
-
-std::string Matrix::ToString() const {
-    if (Empty()) {
-        return "Matr is empty/ Матрица пуста";
-    }
-    return FormatMatrixToString();
-}
 
 bool Matrix::PrintToFile(const std::string& filename) const {
     if (Empty()) {
