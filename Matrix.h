@@ -10,6 +10,8 @@ class Matrix {
     bool bFull;
     double** matr;
 
+    void PrivateDelete(int nPoint);
+
    public:
     enum class TypeSide { NONE, Row, Col, Both };
 

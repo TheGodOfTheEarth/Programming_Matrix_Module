@@ -42,35 +42,54 @@ Matrix::Errors Matrix::Create(int rows, int cols) {
         Delete();
     }
 
-    try {
-        matr = new (std::nothrow) double*[rows];
-        if (matr == nullptr) {
-            delete[] matr;
-            return Errors::bad_alloc;
-        }
-        for (int i = 0; i < rows; i++) {
-            matr[i] = new (std::nothrow) double[cols]{};
-        }
-
-        nMatrR = rows;
-        nMatrC = cols;
+    matr = new (std::nothrow) double*[rows];
+    if (matr == nullptr) {
+        delete[] matr;
+        nMatrR = 0;
+        nMatrC = 0;
         bFull = false;
-        return Errors::success;
-    } catch (const std::bad_alloc&) {
+
         return Errors::bad_alloc;
     }
+
+    for (int i = 0; i < rows; i++) {
+        matr[i] = new (std::nothrow) double[cols]{};
+        if (matr[i] == nullptr or matr[i] != 0) {
+            PrivateDelete(i);  // i - 1
+            return Errors::bad_alloc;
+        }
+    }
+
+    nMatrR = rows;
+    nMatrC = cols;
+    bFull = false;
+    return Errors::success;
 }
 
 void Matrix::Delete() {
     if (matr != nullptr) {
-        for (int i = 0; i < nMatrR; i++) {
-            if (matr[i] != nullptr) {
-                delete[] matr[i];
-            }
-        }
+        // for (int i = 0; i < nMatrR; i++) {
+        //     if (matr[i] != nullptr) {
+        //         delete[] matr[i];
+        //     }
+        // }
         delete[] matr;
         matr = nullptr;
     }
+    nMatrR = 0;
+    nMatrC = 0;
+    bFull = false;
+}
+
+void Matrix::PrivateDelete(int nPoint) {
+    for (int i = 0; i < nPoint; i++) {
+        if (matr[i] != nullptr) {
+            delete[] matr[i];
+        }
+    }
+    delete[] matr;
+    matr = nullptr;
+
     nMatrR = 0;
     nMatrC = 0;
     bFull = false;
