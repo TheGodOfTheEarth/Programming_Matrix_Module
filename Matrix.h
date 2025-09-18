@@ -29,7 +29,6 @@ class Matrix {
     Matrix(int rows, int cols);
     ~Matrix();
 
-    Matrix::Errors Create();
     Matrix::Errors Create(int rows, int cols);
     void Delete();
     void Clear();

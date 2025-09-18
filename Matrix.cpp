@@ -5,7 +5,6 @@
 #include <iostream>
 #include <new>
 #include <sstream>
-// #include <stdexcept>
 
 Matrix::Matrix() {
     nMatrR = 0;
@@ -34,13 +33,6 @@ void Matrix::Clear() {
     bFull = false;
 }
 
-// Matrix::Errors Matrix::Create() {
-//     if (nMatrR == 0 || nMatrC == 0) {
-//         return Errors::invalid_size;
-//     }
-//     return Create(nMatrR, nMatrC);
-// }
-
 Matrix::Errors Matrix::Create(int rows, int cols) {
     if (rows <= 0 || cols <= 0) {
         return Errors::invalid_size;
@@ -65,7 +57,7 @@ Matrix::Errors Matrix::Create(int rows, int cols) {
         bFull = false;
         return Errors::success;
     } catch (const std::bad_alloc&) {
-        return Errors::bad_alloc;  // Ошибка выделения памяти
+        return Errors::bad_alloc;
     }
 }
 
