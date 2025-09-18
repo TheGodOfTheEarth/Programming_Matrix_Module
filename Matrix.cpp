@@ -1,10 +1,11 @@
 #include "Matrix.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-// #include <stdexcept>
 
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <new>
+#include <sstream>
+// #include <stdexcept>
 
 Matrix::Matrix() {
     nMatrR = 0;
@@ -12,7 +13,6 @@ Matrix::Matrix() {
     bFull = false;
     matr = nullptr;
 }
-
 
 Matrix::Matrix(int rows, int cols) {
     nMatrR = rows;
@@ -22,11 +22,7 @@ Matrix::Matrix(int rows, int cols) {
     Create(rows, cols);
 }
 
-
-Matrix::~Matrix() {
-    Delete();
-}
-
+Matrix::~Matrix() { Delete(); }
 
 void Matrix::Clear() {
     if (matr == nullptr) return;
@@ -38,10 +34,16 @@ void Matrix::Clear() {
     bFull = false;
 }
 
+// Matrix::Errors Matrix::Create() {
+//     if (nMatrR == 0 || nMatrC == 0) {
+//         return Errors::invalid_size;
+//     }
+//     return Create(nMatrR, nMatrC);
+// }
 
-int Matrix::Create(int rows, int cols) {
+Matrix::Errors Matrix::Create(int rows, int cols) {
     if (rows <= 0 || cols <= 0) {
-        return -101;
+        return Errors::invalid_size;
     }
 
     if (matr != nullptr) {
@@ -49,18 +51,21 @@ int Matrix::Create(int rows, int cols) {
     }
 
     try {
-        matr = new double*[rows];
-        for (int i = 0; i < rows; i++) {
-            matr[i] = new double[cols]{};
+        matr = new (std::nothrow) double*[rows];
+        if (matr == nullptr) {
+            delete[] matr;
+            return Errors::bad_alloc;
         }
-        
+        for (int i = 0; i < rows; i++) {
+            matr[i] = new (std::nothrow) double[cols]{};
+        }
+
         nMatrR = rows;
         nMatrC = cols;
         bFull = false;
-        return 0;
-    }
-    catch (const std::bad_alloc&) {
-        return -102; // Ошибка выделения памяти
+        return Errors::success;
+    } catch (const std::bad_alloc&) {
+        return Errors::bad_alloc;  // Ошибка выделения памяти
     }
 }
 
@@ -69,7 +74,6 @@ void Matrix::Delete() {
         for (int i = 0; i < nMatrR; i++) {
             if (matr[i] != nullptr) {
                 delete[] matr[i];
-                matr[i] = nullptr;
             }
         }
         delete[] matr;
@@ -80,317 +84,258 @@ void Matrix::Delete() {
     bFull = false;
 }
 
-int Matrix::AddDim(TypeSide side, int rowCount, int colCount) {
-    if (rowCount == 0 && colCount == 0) return -201;
-    
+Matrix::Errors Matrix::AddDim(TypeSide side, int rowCount, int colCount) {
+    if (rowCount == 0 && colCount == 0) return Errors::invalid_argument;
+
     Matrix newMatrix;
-    
+
     switch (side) {
         case TypeSide::Row:
-            if (newMatrix.Create(nMatrR + rowCount, nMatrC) != 0) return -202;
+            if (newMatrix.Create(nMatrR + rowCount, nMatrC) != Errors::success)
+                return Errors::bad_create;
             for (int r = 0; r < nMatrR; r++) {
                 for (int c = 0; c < nMatrC; c++) {
                     newMatrix.matr[r][c] = matr[r][c];
                 }
             }
             break;
-            
+
         case TypeSide::Col:
-            if (newMatrix.Create(nMatrR, nMatrC + colCount) != 0) return -202;
+            if (newMatrix.Create(nMatrR, nMatrC + colCount) != Errors::success)
+                return Errors::bad_create;
             for (int r = 0; r < nMatrR; r++) {
                 for (int c = 0; c < nMatrC; c++) {
                     newMatrix.matr[r][c] = matr[r][c];
                 }
             }
             break;
-            
+
         case TypeSide::Both:
-            if (newMatrix.Create(nMatrR + rowCount, nMatrC + colCount) != 0) return -202;
+            if (newMatrix.Create(nMatrR + rowCount, nMatrC + colCount) !=
+                Errors::success)
+                return Errors::bad_create;
             for (int r = 0; r < nMatrR; r++) {
                 for (int c = 0; c < nMatrC; c++) {
                     newMatrix.matr[r][c] = matr[r][c];
                 }
             }
             break;
-            
+
         default:
-            return -200;
+            return Errors::invalid_typeside;
     }
-    
+
     Delete();
     matr = newMatrix.matr;
     nMatrR = newMatrix.nMatrR;
     nMatrC = newMatrix.nMatrC;
     bFull = newMatrix.bFull;
-    
+
     newMatrix.matr = nullptr;
     newMatrix.nMatrR = 0;
     newMatrix.nMatrC = 0;
-    
-    return 0;
+
+    return Errors::success;
 }
 
-int Matrix::Transpose() {
+Matrix::Errors Matrix::Transpose() {
     if (matr == nullptr || nMatrR <= 0 || nMatrC <= 0) {
-        return -1;
+        return Errors::invalid_size;
     }
-    
+
     Matrix tempMatrix(nMatrC, nMatrR);
-    
+
     for (int r = 0; r < nMatrR; r++) {
         for (int c = 0; c < nMatrC; c++) {
             tempMatrix.matr[c][r] = matr[r][c];
         }
     }
-    
+
     Delete();
     matr = tempMatrix.matr;
     nMatrR = tempMatrix.nMatrR;
     nMatrC = tempMatrix.nMatrC;
-    
+
     tempMatrix.matr = nullptr;
-    
-    return 0;
+
+    return Errors::success;
 }
 
-
-int Matrix::Copy(const Matrix* source, Matrix* destination) const {
+Matrix::Errors Matrix::Copy(const Matrix* source, Matrix* destination) const {
     if (source == nullptr || destination == nullptr) {
-        return -1;
+        return Errors::invalid_ptr;
     }
-    
-    if (destination->nMatrR != source->nMatrR || 
+
+    if (destination->nMatrR != source->nMatrR ||
         destination->nMatrC != source->nMatrC) {
-        if (destination->Create(source->nMatrR, source->nMatrC) != 0) {
-            return -2;
+        if (destination->Create(source->nMatrR, source->nMatrC) !=
+            Errors::success) {
+            return Errors::bad_create;
         }
-    }
-    else {
+    } else {
         destination->Clear();
     }
-    
+
     for (int r = 0; r < source->nMatrR; r++) {
         for (int c = 0; c < source->nMatrC; c++) {
             destination->matr[r][c] = source->matr[r][c];
         }
     }
-    
+
     destination->bFull = source->bFull;
-    
-    return 0;
+
+    return Errors::success;
 }
 
-int Matrix::Insert(TypeSide side, int index, int count) {
-    if (count <= 0) return -204;
+Matrix::Errors Matrix::Insert(TypeSide side, int index, int count) {
+    if (count <= 0) return Errors::invalid_argument;
     if (index < 0) index = 0;
-    
+
     Matrix tempMatrix;
-    if (Copy(this, &tempMatrix) != 0) {
-        return -205;
+    if (Copy(this, &tempMatrix) != Errors::success) {
+        return Errors::bad_create;
     }
-    
+
     switch (side) {
         case TypeSide::Row:
             if (index > nMatrR) index = nMatrR;
-            if (Create(nMatrR + count, nMatrC) != 0) return -206;
-            
+            if (Create(nMatrR + count, nMatrC) != Errors::success)
+                return Errors::bad_create;
+
             for (int r = 0; r < index; r++) {
                 for (int c = 0; c < nMatrC; c++) {
                     matr[r][c] = tempMatrix.matr[r][c];
                 }
             }
-            
+
             for (int r = index; r < index + count; r++) {
                 for (int c = 0; c < nMatrC; c++) {
                     matr[r][c] = 0;
                 }
             }
-            
+
             for (int r = index + count; r < nMatrR; r++) {
                 for (int c = 0; c < nMatrC; c++) {
                     matr[r][c] = tempMatrix.matr[r - count][c];
                 }
             }
             break;
-            
+
         case TypeSide::Col:
             if (index > nMatrC) index = nMatrC;
-            if (Create(nMatrR, nMatrC + count) != 0) return -206;
-            
+            if (Create(nMatrR, nMatrC + count) != Errors::success)
+                return Errors::bad_create;
+
             for (int r = 0; r < nMatrR; r++) {
                 for (int c = 0; c < index; c++) {
                     matr[r][c] = tempMatrix.matr[r][c];
                 }
-                
+
                 for (int c = index; c < index + count; c++) {
                     matr[r][c] = 0;
                 }
-                
+
                 for (int c = index + count; c < nMatrC; c++) {
                     matr[r][c] = tempMatrix.matr[r][c - count];
                 }
             }
             break;
-            
+
         default:
-            return -200;
+            return Errors::invalid_typeside;
     }
-    
-    return 0;
+
+    return Errors::success;
 }
 
-
 // удаление пространства !!! не работает !!!
-// int Matrix::DeleteDim(TypeSide side, int index) {
-//     if (index < 0) return -1;
-    
-//     switch (side) {
-//         case TypeSide::Row:
-//             if (index >= nMatrR) return -2;
-            
-//             for (int r = index; r < nMatrR - 1; r++) {
-//                 for (int c = 0; c < nMatrC; c++) {
-//                     matr[r][c] = matr[r + 1][c];
-//                 }
-//             }
-            
-//             if (Create(nMatrR - 1, nMatrC) != 0) return -3;
-//             break;
-            
-//         case TypeSide::Col:
-//             if (index >= nMatrC) return -2;
-            
-//             for (int r = 0; r < nMatrR; r++) {
-//                 for (int c = index; c < nMatrC - 1; c++) {
-//                     matr[r][c] = matr[r][c + 1];
-//                 }
-//             }
-            
-//             if (Create(nMatrR, nMatrC - 1) != 0) return -3;
-//             break;
-            
-//         default:
-//             return -200;
-//     }
-    
-//     return 0;
-// }
+Matrix::Errors Matrix::DeleteDim(TypeSide side, int index) {
+    if (index < 0) return Errors::invalid_size;
 
-int Matrix::DeleteDim(TypeSide side, int index) {
-    if (index < 0) return -1;
-    
     switch (side) {
-        case TypeSide::Row: {
-            if (index >= nMatrR) return -2;
-            
-            // Сдвигаем строки
+        case TypeSide::Row:
+            if (index >= nMatrR) return Errors::invalid_argument;
+
             for (int r = index; r < nMatrR - 1; r++) {
                 for (int c = 0; c < nMatrC; c++) {
                     matr[r][c] = matr[r + 1][c];
                 }
             }
-            
-            // Удаляем последнюю строку
-            delete[] matr[nMatrR - 1];
-            
-            // Создаем новый массив указателей
-            double** newRowPtrs = new double*[nMatrR - 1];
-            for (int r = 0; r < nMatrR - 1; r++) {
-                newRowPtrs[r] = matr[r];
-            }
-            
-            delete[] matr;
-            matr = newRowPtrs;
-            nMatrR--;
+
+            if (Create(nMatrR - 1, nMatrC) != Errors::success)
+                return Errors::bad_create;
             break;
-        }
-            
-        case TypeSide::Col: {
-            if (index >= nMatrC) return -2;
-            
+
+        case TypeSide::Col:
+            if (index >= nMatrC) return Errors::invalid_argument;
+
             for (int r = 0; r < nMatrR; r++) {
-                // Сдвигаем элементы
                 for (int c = index; c < nMatrC - 1; c++) {
                     matr[r][c] = matr[r][c + 1];
                 }
-                
-                // Создаем новую строку
-                double* newRow = new double[nMatrC - 1];
-                for (int c = 0; c < nMatrC - 1; c++) {
-                    newRow[c] = matr[r][c];
-                }
-                
-                delete[] matr[r];
-                matr[r] = newRow;
             }
-            nMatrC--;
+
+            if (Create(nMatrR, nMatrC - 1) != Errors::success)
+                return Errors::bad_create;
             break;
-        }
-            
-        case TypeSide::Both: {
-            // Удаление и строки и столбца - сложная операция
-            // Можно реализовать как последовательность двух удалений
-            // или отдельной логикой
-            return -201; // Not implemented
-        }
-            
-        case TypeSide::NONE:
+
         default:
-            return -200;
+            return Errors::invalid_typeside;
     }
-    
-    return 0;
+
+    return Errors::success;
 }
 
+Matrix::Errors Matrix::Assign(const Matrix* source) {
+    if (source == nullptr) return Errors::bad_create;
 
-int Matrix::Assign(const Matrix* source) {
-    if (source == nullptr) return -202;
-    
     if (matr != nullptr) {
         Delete();
     }
-    
-    if (Create(source->nMatrR, source->nMatrC) != 0) {
-        return -203;
+
+    if (Create(source->nMatrR, source->nMatrC) != Errors::success) {
+        return Errors::bad_create;
     }
-    
+
     for (int r = 0; r < nMatrR; r++) {
         for (int c = 0; c < nMatrC; c++) {
             matr[r][c] = source->matr[r][c];
         }
     }
-    
+
     bFull = source->bFull;
-    
-    return 0;
+
+    return Errors::success;
 }
 
-int Matrix::NewSize(int newRows, int newCols) {
+Matrix::Errors Matrix::NewSize(int newRows, int newCols) {
     Matrix tempMatrix;
-    if (Copy(this, &tempMatrix) != 0) {
-        return -1;
+    if (Copy(this, &tempMatrix) != Errors::success) {
+        return Errors::bad_create;
     }
-    
-    if (Create(newRows, newCols) != 0) {
-        return -2;
+
+    if (Create(newRows, newCols) != Errors::success) {
+        return Errors::bad_create;
     }
-    
+
     int copyRows = (newRows < tempMatrix.nMatrR) ? newRows : tempMatrix.nMatrR;
     int copyCols = (newCols < tempMatrix.nMatrC) ? newCols : tempMatrix.nMatrC;
-    
+
     for (int r = 0; r < copyRows; r++) {
         for (int c = 0; c < copyCols; c++) {
             matr[r][c] = tempMatrix.matr[r][c];
         }
     }
-    
-    return 0;
+
+    return Errors::success;
 }
 
-std::string Matrix::FormatMatrixToString(int nSetW, int nSetPrecision, std::string sDivider, TypeOutput type) const {
+std::string Matrix::FormatMatrixToString(int nSetW, int nSetPrecision,
+                                         std::string sDivider,
+                                         TypeOutput type) const {
     std::stringstream ss;
 
-	 switch (type) {
+    switch (type) {
         case TypeOutput::fixed:
             ss << std::fixed;
             break;
@@ -401,34 +346,34 @@ std::string Matrix::FormatMatrixToString(int nSetW, int nSetPrecision, std::stri
             ss << std::defaultfloat;
             break;
     }
-    
+
     for (int r = 0; r < nMatrR; r++) {
         for (int c = 0; c < nMatrC; c++) {
-            ss << std::setw(nSetW) << std::setprecision(nSetPrecision) << matr[r][c];
+            ss << std::setw(nSetW) << std::setprecision(nSetPrecision)
+               << matr[r][c];
         }
         ss << sDivider;
     }
-    
+
     return ss.str();
 }
-
 
 bool Matrix::PrintToFile(const std::string& filename) const {
     if (Empty()) {
         return false;
     }
-    
+
     if (filename.empty()) {
         return false;
     }
-    
+
     std::ofstream file(filename);
     if (!file.is_open()) {
         return false;
     }
-    
+
     file << FormatMatrixToString();
     file.close();
-    
+
     return true;
 }

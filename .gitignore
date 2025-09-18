@@ -2,3 +2,4 @@
 /.vscode
 
 matrix_output.txt
+.clang-format
