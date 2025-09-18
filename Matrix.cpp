@@ -387,7 +387,7 @@ int Matrix::NewSize(int newRows, int newCols) {
     return 0;
 }
 
-std::string Matrix::FormatMatrixToString(int nSetW = 10, int nSetPrecision = 0, std::string sDivider = "\n", TypeOutput type = TypeOutput::fixed) const {
+std::string Matrix::FormatMatrixToString(int nSetW, int nSetPrecision, std::string sDivider, TypeOutput type) const {
     std::stringstream ss;
 
 	 switch (type) {
