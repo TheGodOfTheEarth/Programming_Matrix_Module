@@ -63,6 +63,7 @@ Matrix::Errors Matrix::Create(int rows, int cols) {
     nMatrR = rows;
     nMatrC = cols;
     bFull = false;
+
     return Errors::success;
 }
 
@@ -154,7 +155,10 @@ Matrix::Errors Matrix::Transpose() {
         return Errors::invalid_size;
     }
 
-    Matrix tempMatrix(nMatrC, nMatrR);
+    Matrix tempMatrix;
+    if (tempMatrix.Create(nMatrC, nMatrR) != Errors::success) {
+        return Errors::bad_create;
+    }
 
     for (int r = 0; r < nMatrR; r++) {
         for (int c = 0; c < nMatrC; c++) {

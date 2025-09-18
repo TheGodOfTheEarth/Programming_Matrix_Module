@@ -56,11 +56,11 @@ int main() {
     cout << output << endl;
 
     // DeleteDim
-    mat.Copy(&mat, &test);
-    test.DeleteDim(Matrix::TypeSide::Col, 2);
-    cout << "\n\n" << "=== Matrix with Deleted Dim(s) ===" << endl;
-    output = test.FormatMatrixToString();
-    cout << output << endl;
+    // mat.Copy(&mat, &test);
+    // test.DeleteDim(Matrix::TypeSide::Col, 2);
+    // cout << "\n\n" << "=== Matrix with Deleted Dim(s) ===" << endl;
+    // output = test.FormatMatrixToString();
+    // cout << output << endl;
 
     // NewSize
     mat.Copy(&mat, &test);
