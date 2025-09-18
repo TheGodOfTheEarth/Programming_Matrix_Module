@@ -54,7 +54,7 @@ Matrix::Errors Matrix::Create(int rows, int cols) {
 
     for (int i = 0; i < rows; i++) {
         matr[i] = new (std::nothrow) double[cols]{};
-        if (matr[i] == nullptr or matr[i] != 0) {
+        if (matr[i] == nullptr) {
             PrivateDelete(i);  // i - 1
             return Errors::bad_alloc;
         }
