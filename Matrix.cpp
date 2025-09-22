@@ -263,44 +263,6 @@ Matrix::Errors Matrix::Insert(TypeSide side, int index, int count) {
     return Errors::success;
 }
 
-// удаление пространства !!! не работает !!!
-Matrix::Errors Matrix::DeleteDim(TypeSide side, int index) {
-    if (index < 0) return Errors::invalid_size;
-
-    switch (side) {
-        case TypeSide::Row:
-            if (index >= nMatrR) return Errors::invalid_argument;
-
-            for (int r = index; r < nMatrR - 1; r++) {
-                for (int c = 0; c < nMatrC; c++) {
-                    matr[r][c] = matr[r + 1][c];
-                }
-            }
-
-            if (Create(nMatrR - 1, nMatrC) != Errors::success)
-                return Errors::bad_create;
-            break;
-
-        case TypeSide::Col:
-            if (index >= nMatrC) return Errors::invalid_argument;
-
-            for (int r = 0; r < nMatrR; r++) {
-                for (int c = index; c < nMatrC - 1; c++) {
-                    matr[r][c] = matr[r][c + 1];
-                }
-            }
-
-            if (Create(nMatrR, nMatrC - 1) != Errors::success)
-                return Errors::bad_create;
-            break;
-
-        default:
-            return Errors::invalid_typeside;
-    }
-
-    return Errors::success;
-}
-
 Matrix::Errors Matrix::Assign(const Matrix* source) {
     if (source == nullptr) return Errors::bad_create;
 

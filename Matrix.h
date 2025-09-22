@@ -39,7 +39,6 @@ class Matrix {
     Matrix::Errors AddDim(TypeSide side, int rowCount = 0, int colCount = 0);
     Matrix::Errors Assign(const Matrix* source);
     Matrix::Errors Copy(const Matrix* source, Matrix* destination) const;
-    Matrix::Errors DeleteDim(TypeSide side, int index = -1);
     Matrix::Errors Insert(TypeSide side, int index = 0, int count = 1);
     bool IsFull() const { return bFull; }
     Matrix::Errors NewSize(int newRows, int newCols);
