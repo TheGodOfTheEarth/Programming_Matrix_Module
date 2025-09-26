@@ -1,6 +1,8 @@
-#pragma once
-// #ifndef Matrix_h
-// #define Matrix_h
+#pragma once  // первый вариант защиты от повторного включения
+
+#ifndef Matrix_h  // второй вариант защиты от повторного включения
+#define Matrix_h
+
 #include <string>
 
 class Matrix {
@@ -55,3 +57,5 @@ class Matrix {
     double* operator[](int index) { return matr[index]; }
     const double* operator[](int index) const { return matr[index]; }
 };
+
+#endif Matrix_h
