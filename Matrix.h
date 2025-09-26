@@ -17,7 +17,7 @@ class Matrix {
    public:
     enum class TypeSide { NONE, Row, Col, Both };
 
-    enum class TypeOutput { fixed, scientific, defaultfloat };
+    enum class TypeOutput { fixed, scientific, defaultfloat, f, s, d };
 
     enum class Errors {
         success = 0,
@@ -46,8 +46,9 @@ class Matrix {
     Matrix::Errors NewSize(int newRows, int newCols);
     Matrix::Errors Transpose();
 
-    std::string FormatMatrixToString(int nSetW = 10, int nSetPrecision = 0,
-                                     std::string sDivider = "\n",
+    std::string FormatMatrixToString(std::streamsize nSetW = 10,
+                                     std::streamsize nSetPrecision = 0,
+                                     const std::string& sDivider = "\n",
                                      TypeOutput type = TypeOutput::fixed) const;
     bool PrintToFile(const std::string& filename) const;
 
@@ -58,4 +59,4 @@ class Matrix {
     const double* operator[](int index) const { return matr[index]; }
 };
 
-#endif Matrix_h
+#endif

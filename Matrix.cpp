@@ -307,19 +307,23 @@ Matrix::Errors Matrix::NewSize(int newRows, int newCols) {
     return Errors::success;
 }
 
-std::string Matrix::FormatMatrixToString(int nSetW, int nSetPrecision,
-                                         std::string sDivider,
+std::string Matrix::FormatMatrixToString(std::streamsize nSetW,
+                                         std::streamsize nSetPrecision,
+                                         const std::string& sDivider,
                                          TypeOutput type) const {
     std::stringstream ss;
 
     switch (type) {
         case TypeOutput::fixed:
+        case TypeOutput::f:
             ss << std::fixed;
             break;
         case TypeOutput::scientific:
+        case TypeOutput::s:
             ss << std::scientific;
             break;
         case TypeOutput::defaultfloat:
+        case TypeOutput::d:
             ss << std::defaultfloat;
             break;
     }
