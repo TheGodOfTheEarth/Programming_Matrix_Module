@@ -69,11 +69,12 @@ Matrix::Errors Matrix::Create(int rows, int cols) {
 
 void Matrix::Delete() {
     if (matr != nullptr) {
-        // for (int i = 0; i < nMatrR; i++) {
-        //     if (matr[i] != nullptr) {
-        //         delete[] matr[i];
-        //     }
-        // }
+        for (int i = 0; i < nMatrR;
+             i++) {  // убрана лишняя проверка, так как предполагается, что если
+                     // вызывается эта функция, а не такая же с параметром, то
+                     // каждый подмассив точно есть и не может равняться nullptr
+            delete[] matr[i];
+        }
         delete[] matr;
         matr = nullptr;
     }
