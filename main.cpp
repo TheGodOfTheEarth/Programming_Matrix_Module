@@ -18,7 +18,7 @@ int main() {
     }
 
     cout << "\n\n" << "=== Initial Matrix ===" << endl;
-    output = mat.FormatMatrixToString();
+    output = mat.FormatMatrixToString(10, 0, "\n");
     cout << output << endl;
 
     // Copy

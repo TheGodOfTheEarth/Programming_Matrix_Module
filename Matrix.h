@@ -15,7 +15,17 @@ class Matrix {
    public:
     enum class TypeSide { NONE, Row, Col, Both };
 
-    enum class TypeOutput { fixed, scientific, defaultfloat, f, s, d };
+    enum FormatFlags {
+        Fixed = 1 << 0,
+        Scientific = 1 << 1,
+        DefaultFloat = 1 << 2,
+        ShowPos = 1 << 3,
+        ShowBase = 1 << 4,
+        BoolAlpha = 1 << 5,
+        Internal = 1 << 6,
+        Right = 1 << 7,
+        Left = 1 << 8
+    };
 
     enum class Errors {
         success = 0,
@@ -47,7 +57,7 @@ class Matrix {
     std::string FormatMatrixToString(std::streamsize nSetW = 10,
                                      std::streamsize nSetPrecision = 0,
                                      const std::string& sDivider = "\n",
-                                     TypeOutput type = TypeOutput::fixed) const;
+                                     int flags = Fixed) const;
     bool PrintToFile(const std::string& filename) const;
 
     int GetRows() const { return nMatrR; }

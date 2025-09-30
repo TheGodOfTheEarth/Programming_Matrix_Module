@@ -299,23 +299,21 @@ Matrix::Errors Matrix::NewSize(int newRows, int newCols) {
 std::string Matrix::FormatMatrixToString(std::streamsize nSetW,
                                          std::streamsize nSetPrecision,
                                          const std::string& sDivider,
-                                         TypeOutput type) const {
+                                         int flags) const {
     std::stringstream ss;
 
-    switch (type) {
-        case TypeOutput::fixed:
-        case TypeOutput::f:
-            ss << std::fixed;
-            break;
-        case TypeOutput::scientific:
-        case TypeOutput::s:
-            ss << std::scientific;
-            break;
-        case TypeOutput::defaultfloat:
-        case TypeOutput::d:
-            ss << std::defaultfloat;
-            break;
-    }
+    ss << std::setw(nSetW) << std::setprecision(nSetPrecision) << std::dec
+       << std::noshowpos << std::nouppercase << std::noshowbase
+       << std::noboolalpha << std::right;  // обнуление потока
+
+    if (flags & Fixed) ss << std::fixed;
+    if (flags & Scientific) ss << std::scientific;
+    if (flags & ShowPos) ss << std::showpos;
+    if (flags & ShowBase) ss << std::showbase;
+    if (flags & BoolAlpha) ss << std::boolalpha;
+    if (flags & Right) ss << std::right;
+    if (flags & Left) ss << std::left;
+    if (flags & Internal) ss << std::internal;
 
     for (int r = 0; r < nMatrR; r++) {
         for (int c = 0; c < nMatrC; c++) {
