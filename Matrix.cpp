@@ -55,7 +55,7 @@ Matrix::Errors Matrix::Create(int rows, int cols) {
     for (int i = 0; i < rows; i++) {
         matr[i] = new (std::nothrow) double[cols]{};
         if (matr[i] == nullptr) {
-            PrivateDelete(i);  // i - 1
+            Delete(i - 1);
             return Errors::bad_alloc;
         }
     }
@@ -67,30 +67,18 @@ Matrix::Errors Matrix::Create(int rows, int cols) {
     return Errors::success;
 }
 
-void Matrix::Delete() {
+void Matrix::Delete(int nPoint) {
+    if (nPoint <= 0) {
+        nPoint = nMatrR;
+    }
+
     if (matr != nullptr) {
-        for (int i = 0; i < nMatrR;
-             i++) {  // убрана лишняя проверка, так как предполагается, что если
-                     // вызывается эта функция, а не такая же с параметром, то
-                     // каждый подмассив точно есть и не может равняться nullptr
+        for (int i = 0; i < nPoint; i++) {
             delete[] matr[i];
         }
         delete[] matr;
         matr = nullptr;
     }
-    nMatrR = 0;
-    nMatrC = 0;
-    bFull = false;
-}
-
-void Matrix::PrivateDelete(int nPoint) {
-    for (int i = 0; i < nPoint; i++) {
-        if (matr[i] != nullptr) {
-            delete[] matr[i];
-        }
-    }
-    delete[] matr;
-    matr = nullptr;
 
     nMatrR = 0;
     nMatrC = 0;

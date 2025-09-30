@@ -12,8 +12,6 @@ class Matrix {
     bool bFull;
     double** matr;
 
-    void PrivateDelete(int nPoint);
-
    public:
     enum class TypeSide { NONE, Row, Col, Both };
 
@@ -34,7 +32,7 @@ class Matrix {
     ~Matrix();
 
     Matrix::Errors Create(int rows, int cols);
-    void Delete();
+    void Delete(int nPoint = 0);
     void Clear();
     bool Empty() const { return matr == nullptr; }
 
