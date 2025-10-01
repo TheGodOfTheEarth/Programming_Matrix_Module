@@ -18,7 +18,8 @@ int main() {
     }
 
     cout << "\n\n" << "=== Initial Matrix ===" << endl;
-    output = mat.FormatMatrixToString(10, 0, "\n");
+    output = mat.FormatMatrixToString(10, 0, "\n",
+                                      ios_base::left | ios_base::scientific);
     cout << output << endl;
 
     // Copy

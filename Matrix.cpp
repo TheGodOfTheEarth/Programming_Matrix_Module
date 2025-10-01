@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <iomanip>
-#include <iostream>
 #include <new>
 #include <sstream>
 
@@ -294,21 +293,10 @@ Matrix::Errors Matrix::NewSize(int newRows, int newCols) {
 std::string Matrix::FormatMatrixToString(std::streamsize nSetW,
                                          std::streamsize nSetPrecision,
                                          const std::string& sDivider,
-                                         int flags) const {
+                                         std::ios_base::fmtflags flags) const {
     std::stringstream ss;
 
-    ss << std::setw(nSetW) << std::setprecision(nSetPrecision) << std::dec
-       << std::noshowpos << std::nouppercase << std::noshowbase
-       << std::noboolalpha << std::right;  // обнуление потока
-
-    if (flags & Fixed) ss << std::fixed;
-    if (flags & Scientific) ss << std::scientific;
-    if (flags & ShowPos) ss << std::showpos;
-    if (flags & ShowBase) ss << std::showbase;
-    if (flags & BoolAlpha) ss << std::boolalpha;
-    if (flags & Right) ss << std::right;
-    if (flags & Left) ss << std::left;
-    if (flags & Internal) ss << std::internal;
+    ss.flags(flags);
 
     for (int r = 0; r < nMatrR; r++) {
         for (int c = 0; c < nMatrC; c++) {

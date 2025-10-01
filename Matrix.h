@@ -3,6 +3,7 @@
 #ifndef Matrix_h  // второй вариант защиты от повторного включения
 #define Matrix_h
 
+#include <iostream>
 #include <string>
 
 class Matrix {
@@ -14,18 +15,6 @@ class Matrix {
 
    public:
     enum class TypeSide { NONE, Row, Col, Both };
-
-    enum FormatFlags {
-        Fixed = 1 << 0,
-        Scientific = 1 << 1,
-        DefaultFloat = 1 << 2,
-        ShowPos = 1 << 3,
-        ShowBase = 1 << 4,
-        BoolAlpha = 1 << 5,
-        Internal = 1 << 6,
-        Right = 1 << 7,
-        Left = 1 << 8
-    };
 
     enum class Errors {
         success = 0,
@@ -54,10 +43,11 @@ class Matrix {
     Matrix::Errors NewSize(int newRows, int newCols);
     Matrix::Errors Transpose();
 
-    std::string FormatMatrixToString(std::streamsize nSetW = 10,
-                                     std::streamsize nSetPrecision = 0,
-                                     const std::string& sDivider = "\n",
-                                     int flags = Fixed) const;
+    std::string FormatMatrixToString(
+        std::streamsize nSetW = 10, std::streamsize nSetPrecision = 0,
+        const std::string& sDivider = "\n",
+        std::ios_base::fmtflags flags =
+            std::ios_base::fixed) const;  // right и dec
     bool PrintToFile(const std::string& filename) const;
 
     int GetRows() const { return nMatrR; }
