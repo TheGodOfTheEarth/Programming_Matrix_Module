@@ -44,18 +44,13 @@ Matrix::Errors Matrix::Create(int rows, int cols) {
 
     matr = new (std::nothrow) double*[rows];
     if (matr == nullptr) {
-        delete[] matr;
-        nMatrR = 0;
-        nMatrC = 0;
-        bFull = false;
-
         return Errors::bad_alloc;
     }
 
     for (int i = 0; i < rows; i++) {
-        matr[i] = new (std::nothrow) double[cols]{};
+        matr[i] = new (std::nothrow) double[cols];
         if (matr[i] == nullptr) {
-            Delete(i - 1);
+            Delete(i);
             return Errors::bad_alloc;
         }
     }
